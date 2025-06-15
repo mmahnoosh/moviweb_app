@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
 app = Flask(__name__)
@@ -35,5 +35,12 @@ def update_movie():
 @app.route('/users/<user_id>/delete_movie/<movie_id>')
 def delete_movie():
     pass
+
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
 if __name__ == '__main__':
     app.run(debug=True)
