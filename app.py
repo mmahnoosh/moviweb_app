@@ -1,8 +1,16 @@
+import json
+import os
 from flask import Flask, render_template
 from datamanager.sqlite_data_manager import SQLiteDataManager
+from data_model import User, Movie
 
 app = Flask(__name__)
-data_manager = SQLiteDataManager('moviwebapp.db')  # Use the appropriate path to your Database
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'data', 'moviwebapp.db')}"
+
+data_manager = SQLiteDataManager(app)
 
 
 @app.route('/')

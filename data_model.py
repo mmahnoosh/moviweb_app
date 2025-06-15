@@ -1,12 +1,17 @@
 
-from flask_sqlalchemy import SQLAlchemy, Column, Integer, String, Float
+from flask_sqlalchemy import SQLAlchemy, Column, Integer, String, Float, ForeignKey, relationship
+
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100))
+    name = Column(String(100), nullable=False)
+
+    user_movies = relationship("UserMovies", back_populates="user", cascade="all, delete")
+
     def __repr__(self):
         return f"id: {self.id} name:{self.name}"
 
@@ -15,11 +20,16 @@ class User(db.Model):
             return f"name:{self.name}"
 
 class Movie(db.Model):
+    __tablename__ = 'movie'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
-    director = Column(String(100), nullable=False)
-    release_year = Column(Integer)
-    rating = Column(Float)
+    director = Column(String(100), nullable=True)
+    release_year = Column(Integer, nullable=False)
+    rating = Column(Float, nullable=True)
+    poster = Column(String, nullable=True)
+
+    user_movies = relationship("UserMovies", back_populates="movie", cascade="all, delete")
+
     def __repr__(self):
         return (f"id: {self.id} name:{self.name} director:{self.director} "
                 f"release_year:{self.release_year} rating:{self.rating}")
@@ -27,3 +37,12 @@ class Movie(db.Model):
     def __str__(self):
         return (f"name:{self.name} director:{self.director} "
                 f"release_year:{self.release_year} rating:{self.rating}")
+
+class UserMovies(db.Model):
+    __tablename__ = 'user_movies'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    movie_id = Column(Integer, ForeignKey("movie.id"), nullable=False)
+
+    user = relationship("User", back_populates="user_movies")
+    movie = relationship("Movie", back_populates="user_movies")
