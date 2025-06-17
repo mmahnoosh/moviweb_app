@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Add User{% endblock %}
+{% set active_page = 'users' %}
+
+{% block content %}
+    <h1>Add a New User</h1>
+
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
+    {% if message %}
+        <div class="success-message">{{ message }}</div>
+    {% endif %}
+
+    <form method="post" class="form-box">
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="name" placeholder="Enter username" required>
+        <button type="submit" class="button">➕ Add User</button>
+    </form>
+
+    <div class="actions">
+        <a href="{{ url_for('list_users') }}" class="button">🔙 Back</a>
+    </div>
+{% endblock %}

@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
 
-from data_manager_interface import DataManagerInterface
+from data_model import User, Movie, UserMovies
+from datamanager.data_manager_interface import DataManagerInterface
 
 
 class SQLiteDataManager(DataManagerInterface):
@@ -8,20 +10,133 @@ class SQLiteDataManager(DataManagerInterface):
     def __init__(self, app):
         self.db = SQLAlchemy(app)
 
+    def add_item(self, item):
+        try:
+            self.db.session.add(item)
+            self.db.session.commit()
+            return item
+        except SQLAlchemyError:
+            self.db.session.rollback()
+            return None
+
     def get_all_users(self):
-        pass
+        try:
+            return self.db.session.query(User).all()
+        except SQLAlchemyError:
+            print("Error fetching users")
+            return []
+
+    def get_all_movies(self):
+        try:
+            return self.db.session.query(Movie).all()
+        except SQLAlchemyError:
+            print("Error fetching movies")
+            return []
 
     def get_user_movies(self, user_id):
-        pass
+        try:
+            user = self.db.session.get(User, user_id)
+            if not user:
+                return None
+            movies = user.movies
 
-    def add_user(self, user):
-        pass
+            return movies
+
+        except SQLAlchemyError:
+            print("Error fetching users and Movies")
+            return []
+
+
+    def get_user_by_name(self, username):
+        try:
+            existing_user = self.db.session.query(User).filter_by(name=username).first()
+            if not existing_user:
+                return "Error"
+            return existing_user
+        except SQLAlchemyError:
+            return []
+
+    def get_movie(self, movie_id):
+        """Gets a movie by movie ID."""
+        try:
+            existing_movie = self.db.session.get(Movie, movie_id)
+            if not existing_movie:
+                return None
+            return existing_movie
+        except SQLAlchemyError:
+            return []
+
+    def add_user(self, username):
+        try:
+            existing_user = self.db.session.query(User).filter_by(name=username).first()
+            if existing_user:
+                return None
+            user = User(name=username)
+            return self.add_item(user)
+        except SQLAlchemyError:
+            self.db.session.rollback()
+            return None
 
     def add_movie(self, movie):
-        pass
+        try:
+            existing_movie = self.db.session.query(Movie).filter_by(name=movie.name).first()
+            if existing_movie:
+                return None
+            return self.add_item(movie)
 
-    def update_movie(self, movie):
-        pass
+        except SQLAlchemyError:
+            self.db.session.rollback()
+            return None
 
-    def delete_movie(self, movie_id):
-        pass
+    def update_movie(self, movie_id, user_id, rating):
+        if not rating or not isinstance(rating, (float, int)):
+            return None
+        try:
+            movie = self.db.session.get(Movie, movie_id)
+            if not movie:
+                return None
+            user_movie = self.db.session.query(UserMovies).filter_by(user_id=user_id,
+                                                                     movie_id=movie_id).first()
+            if not user_movie:
+                return None
+            user_movie.movie_rating = float(rating)
+            self.db.session.commit()
+            return movie
+
+        except SQLAlchemyError:
+            return None
+
+
+    def delete_user_movie(self, movie_id, user_id):
+        try:
+            movie = self.db.session.get(Movie, movie_id)
+            if not movie:
+                return None
+            user_movie = self.db.session.query(UserMovies).filter_by(user_id=user_id,
+                                                                     movie_id=movie_id).first()
+            if not user_movie:
+                return None
+            self.db.session.delete(user_movie)
+            if not self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first():
+                self.db.session.delete(movie)
+            self.db.session.commit()
+            return movie
+        except SQLAlchemyError:
+            print("Database error while retrieving user movies")
+            return []
+
+    def delete_user(self, user_id):
+        try:
+            user = self.db.session.get(User, user_id)
+            if not user:
+                return None
+            movie_ids = [movie.id for movie in user.movies]
+            self.db.session.delete(user)
+            for movie_id in movie_ids:
+                if not self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first():
+                    self.db.session.query(Movie).filter_by(id=movie_id).delete()
+            self.db.session.commit()
+            return user.name
+        except SQLAlchemyError:
+            print("Error fetching user")
+            return []

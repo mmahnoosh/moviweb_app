@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="header-container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('list_movies') }}">Movie</a>
+            <a href="{{ url_for('list_users') }}">User</a>
+        </div>
+    </div>
+
+    <div class="centered-container">
+        <div class="message-box">
+            🎬 Welcome to the Movie App 🎉
+        </div>
+    </div>
+
+</body>
+</html>

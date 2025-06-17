@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Update Movie{% endblock %}
+{% set active_page = 'movies' %}
+
+{% block content %}
+    <h1>Update Movie Rating</h1>
+
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
+    {% if message %}
+        <div class="success-message">{{ message }}</div>
+    {% endif %}
+
+    {% if movie %}
+        <div class="movie-info">
+            <p><strong>Title:</strong> {{ movie.name }}</p>
+            <p><strong>Director:</strong> {{ movie.director or 'N/A' }}</p>
+            <p><strong>Year:</strong> {{ movie.release_year }}</p>
+            <p><strong>Current Rating:</strong> {{ movie.rating or 'N/A' }}</p>
+        </div>
+
+        <form method="post" class="form-box">
+            <label for="rating">New Rating (0–10):</label>
+            <input type="text" id="rating" name="rating" placeholder="e.g. 7.8" required>
+            <button type="submit" class="button">💾 Update</button>
+        </form>
+    {% else %}
+        <p>Movie not found.</p>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{{ url_for('list_movies') }}" class="button">🔙 Back to Movies</a>
+    </div>
+{% endblock %}

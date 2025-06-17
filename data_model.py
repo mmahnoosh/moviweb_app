@@ -1,6 +1,5 @@
-
-from flask_sqlalchemy import SQLAlchemy, Column, Integer, String, Float, ForeignKey, relationship
-
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 
 db = SQLAlchemy()
 
@@ -10,14 +9,15 @@ class User(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
 
-    user_movies = relationship("UserMovies", back_populates="user", cascade="all, delete")
+    user_movies = db.relationship("UserMovies", back_populates="user", cascade="all, delete")
+    movies = db.relationship("Movie", secondary="user_movies", backref="users", viewonly=True)
 
     def __repr__(self):
         return f"id: {self.id} name:{self.name}"
 
     def __str__(self):
-        if not self.date_of_death:
-            return f"name:{self.name}"
+        return f"name:{self.name}"
+
 
 class Movie(db.Model):
     __tablename__ = 'movie'
@@ -28,7 +28,7 @@ class Movie(db.Model):
     rating = Column(Float, nullable=True)
     poster = Column(String, nullable=True)
 
-    user_movies = relationship("UserMovies", back_populates="movie", cascade="all, delete")
+    user_movies = db.relationship("UserMovies", back_populates="movie", cascade="all, delete")
 
     def __repr__(self):
         return (f"id: {self.id} name:{self.name} director:{self.director} "
@@ -38,11 +38,13 @@ class Movie(db.Model):
         return (f"name:{self.name} director:{self.director} "
                 f"release_year:{self.release_year} rating:{self.rating}")
 
+
 class UserMovies(db.Model):
     __tablename__ = 'user_movies'
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     movie_id = Column(Integer, ForeignKey("movie.id"), nullable=False)
+    movie_rating = Column(Float, nullable=True)
 
-    user = relationship("User", back_populates="user_movies")
-    movie = relationship("Movie", back_populates="user_movies")
+    user = db.relationship("User", back_populates="user_movies")
+    movie = db.relationship("Movie", back_populates="user_movies")
