@@ -143,15 +143,21 @@ class SQLiteDataManager(DataManagerInterface):
     def delete_user(self, user_id):
         try:
             user = self.db.session.get(User, user_id)
+            print(user.movies)
             if not user:
                 return None
             movie_ids = [movie.id for movie in user.movies]
+            print(movie_ids)
             self.db.session.delete(user)
-            for movie_id in movie_ids:
-                if not self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first():
-                    self.db.session.query(Movie).filter_by(id=movie_id).delete()
             self.db.session.commit()
+            for movie_id in movie_ids:
+                other_links = self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first()
+                print(other_links)
+                if not other_links:
+                    self.db.session.query(Movie).filter_by(id=movie_id).delete()
+
             return user.name
-        except SQLAlchemyError:
-            print("Error fetching user")
+        except SQLAlchemyError as error:
+            self.db.session.rollback()
+            print(f"Error fetching user:{error}")
             return []

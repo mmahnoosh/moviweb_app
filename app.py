@@ -22,38 +22,23 @@ def home():
     return render_template("home.html")
 
 
-@app.route('/users/<int:user_id>', methods=["GET", "POST"])
-def user_movies(user_id):
+@app.route('/users/<int:user_id>', methods=["GET"])
+def list_user_movies(user_id):
     """
        Displays and manages a specific user's movie collection.
        Allows adding, rating, and deleting movies for a given user.
     """
-    if request.method == "POST":
-        action = request.form.get("action")
-        movie_id = request.form.get("movie_id")
-
-        if action == "add":
-
-            movie_id = request.form.get('movie')
-
-            data_manager.add_movie_to_user(movie_id, user_id)
-            return redirect(url_for('user_movies', user_id=user_id))
-
-        elif action == "update_rating":
-            rating = float(request.form.get("rating"))
-            data_manager.update_movie_rating(movie_id, user_id, rating)
-
-        elif action == "delete":
-            data_manager.delete_user_movie(user_id, movie_id)
-
-        return redirect(url_for("user_movies", user_id=user_id))
-
-        data_manager.get_user_movies(user_id)
+    user_movies = data_manager.get_user_movies(user_id)
 
     return render_template("user_movies.html",
                            user_id=user_id,
                            user_movies=user_movies)
 
+
+@app.route('/users/delete/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    data_manager.delete_user(user_id)
+    return redirect(url_for('list_users'))
 
 @app.route('/users')
 def list_users():
@@ -66,11 +51,10 @@ def list_users():
 def list_movies():
     """Lists all movies in the database."""
     movies = data_manager.get_all_movies()
-    return render_template('list_movies.html', movies=movies,
-                           active_page='movies')
+    return render_template('list_movies.html', movies=movies)
 
 
-@app.route('/add_user', methods=['GET', 'POST'])
+@app.route('/users/add', methods=['GET', 'POST'])
 def add_user():
     """Allows a new user to be added."""
     if request.method == 'POST':
@@ -90,7 +74,7 @@ def add_user():
     return render_template('add_user.html')
 
 
-@app.route('/users/add_movie', methods=["GET", "POST"])
+@app.route('/users/<int:user_id>/add_movie', methods=["GET", "POST"])
 def add_movie():
     if request.method == "POST":
         title = request.form.get('title', '').strip()
@@ -129,8 +113,8 @@ def add_movie():
     return render_template('add_movie.html')
 
 
-@app.route('/users/update_movie/<int:movie_id>', methods=['GET', 'POST'])
-def update_movie(movie_id):
+@app.route('/users/<int:user_id>/update_movie/<int:movie_id>', methods=['GET', 'POST'])
+def update_movie(user_id, movie_id):
     """
       Updates the rating of a specific movie.
       Displays current data and accepts new rating via form.
@@ -167,11 +151,6 @@ def update_movie(movie_id):
 def delete_movie(user_id, movie_id):
     """Deletes a movie from a user's collection."""
     data_manager.delete_movie(user_id, movie_id)
-    return redirect(url_for('user_movies', user_id=user_id))
-
-@app.route('/delete_user/<int:user_id>', methods=['POST'])
-def delete_user(user_id):
-    data_manager.delete_user(user_id)
     return redirect(url_for('user_movies', user_id=user_id))
 
 

@@ -16,13 +16,13 @@
         <h1>Your Movie Collection</h1>
 
         <div class="movie-grid">
-            {% for movie in movies %}
+            {% for movie in user_movies %}
                 <div class="movie-card">
                     {% if movie.poster %}
                         <img src="{{ movie.poster }}" alt="Movie Poster" class="movie-poster">
                     {% endif %}
                     <h3>{{ movie.title }}</h3>
-                    <p><strong>Year:</strong> {{ movie.year }}</p>
+                    <p><strong>Year:</strong> {{ movie.release_year }}</p>
                     <p><strong>Director:</strong> {{ movie.director }}</p>
                     <p><strong>Rating:</strong> {{ movie.rating }}</p>
 

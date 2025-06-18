@@ -31,11 +31,11 @@ class Movie(db.Model):
     user_movies = db.relationship("UserMovies", back_populates="movie", cascade="all, delete")
 
     def __repr__(self):
-        return (f"id: {self.id} name:{self.name} director:{self.director} "
+        return (f"id: {self.id} title:{self.title} director:{self.director} "
                 f"release_year:{self.release_year} rating:{self.rating}")
 
     def __str__(self):
-        return (f"name:{self.name} director:{self.director} "
+        return (f"title:{self.title} director:{self.director} "
                 f"release_year:{self.release_year} rating:{self.rating}")
 
 

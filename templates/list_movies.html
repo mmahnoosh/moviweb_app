@@ -4,12 +4,6 @@
 
 {% block content %}
     <h1>Movie Library</h1>
-
-    <div class="actions">
-        <a href="{{ url_for('add_movie') }}">➕ Add Movie</a>
-        <a href="{{ url_for('home') }}">🔙 Back</a>
-    </div>
-
     {% if movies %}
         <div class="user-grid">
             {% for movie in movies %}
