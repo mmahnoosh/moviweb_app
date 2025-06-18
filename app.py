@@ -1,10 +1,10 @@
 import os
-from services.omdb_api import fetch_movie_data
 
 from flask import Flask, render_template, request, abort, redirect, url_for
 
 from data_model import Movie
 from datamanager.sqlite_data_manager import SQLiteDataManager
+from services.omdb_api import fetch_movie_data as fetch_from_api
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -21,6 +21,7 @@ def home():
     """Displays the homepage."""
     return render_template("home.html")
 
+
 @app.route('/users/<int:user_id>', methods=["GET", "POST"])
 def user_movies(user_id):
     """
@@ -36,7 +37,7 @@ def user_movies(user_id):
             movie_id = request.form.get('movie')
 
             data_manager.add_movie_to_user(movie_id, user_id)
-            return redirect(url_for('user_movies'))
+            return redirect(url_for('user_movies', user_id=user_id))
 
         elif action == "update_rating":
             rating = float(request.form.get("rating"))
@@ -47,8 +48,7 @@ def user_movies(user_id):
 
         return redirect(url_for("user_movies", user_id=user_id))
 
-    user_movies = data_manager.get_user_movies(user_id)
-
+        data_manager.get_user_movies(user_id)
 
     return render_template("user_movies.html",
                            user_id=user_id,
@@ -169,6 +169,11 @@ def delete_movie(user_id, movie_id):
     data_manager.delete_movie(user_id, movie_id)
     return redirect(url_for('user_movies', user_id=user_id))
 
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    data_manager.delete_user(user_id)
+    return redirect(url_for('user_movies', user_id=user_id))
+
 
 @app.route('/fetch_movie_data', methods=['GET', 'POST'])
 def fetch_movie_data():
@@ -178,7 +183,7 @@ def fetch_movie_data():
     if request.method == 'POST':
         movie_title = request.form.get('Title')
         if movie_title:
-            movie_data = fetch_movie_data(movie_title)
+            movie_data = fetch_from_api(movie_title)
             if 'error' in movie_data:
                 return render_template('fetch_movie_data.html',
                                        error=movie_data['error'], user_id=user_id)

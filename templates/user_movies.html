@@ -27,7 +27,7 @@
                     <p><strong>Rating:</strong> {{ movie.rating }}</p>
 
                     <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="POST">
-                        <button type="submit" class="button delete-button">Delete</button>
+                        <button type="submit" class="button delete-button">Delete User</button>
                     </form>
 
                     <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" class="button edit-button">Edit</a>
@@ -36,16 +36,14 @@
         </div>
 
         <div class="top-buttons">
-            <form method="GET" action="{{ url_for('fetch_movie') }}">
+            <form method="GET" action="{{ url_for('fetch_movie_data') }}">
                 <input type="hidden" name="user_id" value="{{ user_id }}">
                 <button type="submit" class="button">Search and Add Movie</button>
             </form>
 
             <a href="{{ url_for('home') }}" class="button">Back to Home</a>
         </div>
-        <div class="below-buttons">
-            <a href="{{ url_for('delete_user', user_id=user_id) }}" class="delete-user-text">Delete User</a>
-        </div>
+
     </div>
 </body>
 </html>
