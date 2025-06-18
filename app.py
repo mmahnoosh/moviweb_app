@@ -18,10 +18,15 @@ data_manager = SQLiteDataManager(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    """Displays the homepage."""
     return render_template("home.html")
 
 @app.route('/users/<int:user_id>', methods=["GET", "POST"])
 def user_movies(user_id):
+    """
+       Displays and manages a specific user's movie collection.
+       Allows adding, rating, and deleting movies for a given user.
+    """
     if request.method == "POST":
         action = request.form.get("action")
         movie_id = request.form.get("movie_id")
@@ -52,12 +57,14 @@ def user_movies(user_id):
 
 @app.route('/users')
 def list_users():
+    """Lists all registered users."""
     users = data_manager.get_all_users()
     return render_template('list_users.html', users=users)
 
 
 @app.route('/movies')
 def list_movies():
+    """Lists all movies in the database."""
     movies = data_manager.get_all_movies()
     return render_template('list_movies.html', movies=movies,
                            active_page='movies')
@@ -65,7 +72,7 @@ def list_movies():
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
-    """Route to add a new user."""
+    """Allows a new user to be added."""
     if request.method == 'POST':
         username = request.form.get('name')
         if not username:
@@ -124,6 +131,10 @@ def add_movie():
 
 @app.route('/users/update_movie/<int:movie_id>', methods=['GET', 'POST'])
 def update_movie(movie_id):
+    """
+      Updates the rating of a specific movie.
+      Displays current data and accepts new rating via form.
+    """
     movie = data_manager.get_movie(movie_id)
     if not movie:
         abort(400, description="Movie not found")
@@ -159,31 +170,33 @@ def delete_movie(user_id, movie_id):
     return redirect(url_for('user_movies', user_id=user_id))
 
 
-@app.route('/fetch_movie', methods=['GET', 'POST'])
+@app.route('/fetch_movie_data', methods=['GET', 'POST'])
 def fetch_movie_data():
-    """Fetches movie data from an external API (OMDb)."""
+    """Fetches movie data from the OMDb API based on the title provided."""
     user_id = request.args.get('user_id')
 
     if request.method == 'POST':
-        movie_title = request.form.get('title')
+        movie_title = request.form.get('Title')
         if movie_title:
             movie_data = fetch_movie_data(movie_title)
             if 'error' in movie_data:
-                return render_template('fetch_movie.html',
+                return render_template('fetch_movie_data.html',
                                        error=movie_data['error'], user_id=user_id)
-            return render_template('fetch_movie.html',
+            return render_template('fetch_movie_data.html',
                                    movie=movie_data, user_id=user_id)
 
-    return render_template('fetch_movie.html', user_id=user_id)
+    return render_template('fetch_movie_data.html', user_id=user_id)
 
 
 @app.errorhandler(400)
 def bad_request(error):
+    """Handles bad request (400) errors with a custom error page."""
     return render_template("error.html", error=error)
 
 
 @app.errorhandler(404)
 def not_found(error):
+    """Handles not found (404) errors with a custom error page."""
     return render_template("error.html", error=error)
 
 

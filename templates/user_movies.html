@@ -3,30 +3,50 @@
 {% set active_page = 'users' %}
 
 {% block content %}
-<h1>Movie list for user{{ user_id }}</h1>
 
-<h2>List of Movies</h2>
-<ul>
-    {% for movie in user_movies %}
-    <li>
-        {{ movie.title }} – Rating: {{ movie.rating }}
-        <form method="post" style="display:inline;">
-            <input type="hidden" name="movie_id" value="{{ movie.id }}">
-            <input type="number" name="rating" step="0.1" min="0" max="10" value="{{ movie.rating }}">
-            <button type="submit" name="action" value="Update_rating">Update rating</button>
-            <button type="submit" name="action" value="delete">Delete</button>
-        </form>
-    </li>
-    {% endfor %}
-</ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Movie Collection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Movie Collection</h1>
 
-<h2>ADD Movie</h2>
-<form method="post">
-    <select name="movie_id">
-        {% for movie in all_movies %}
-        <option value="{{ movie.id }}">{{ movie.title }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit" name="action" value="add">ADD</button>
-</form>
+        <div class="movie-grid">
+            {% for movie in movies %}
+                <div class="movie-card">
+                    {% if movie.poster %}
+                        <img src="{{ movie.poster }}" alt="Movie Poster" class="movie-poster">
+                    {% endif %}
+                    <h3>{{ movie.title }}</h3>
+                    <p><strong>Year:</strong> {{ movie.year }}</p>
+                    <p><strong>Director:</strong> {{ movie.director }}</p>
+                    <p><strong>Rating:</strong> {{ movie.rating }}</p>
+
+                    <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="POST">
+                        <button type="submit" class="button delete-button">Delete</button>
+                    </form>
+
+                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" class="button edit-button">Edit</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="top-buttons">
+            <form method="GET" action="{{ url_for('fetch_movie') }}">
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+                <button type="submit" class="button">Search and Add Movie</button>
+            </form>
+
+            <a href="{{ url_for('home') }}" class="button">Back to Home</a>
+        </div>
+        <div class="below-buttons">
+            <a href="{{ url_for('delete_user', user_id=user_id) }}" class="delete-user-text">Delete User</a>
+        </div>
+    </div>
+</body>
+</html>
 {% endblock %}
