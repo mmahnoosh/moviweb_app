@@ -13,9 +13,9 @@
     {% if users %}
         <div class="user-grid">
             {% for user in users %}
-                <div class="user-card">
+                <div class="user-card" id="user-{{ user.id }}">
                     <p><strong>ID:</strong> {{ user.id }}</p>
-                    <p><strong>Name:</strong> {{ user.name }}</p>
+                    <p><strong>Name:</strong> {{ user.name | e }}</p>
                     <a href="{{ url_for('user_movies', user_id=user.id) }}">🎬 View Movies</a>
                 </div>
             {% endfor %}

@@ -1,6 +1,7 @@
 import os
+from services.omdb_api import fetch_movie_data
 
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, redirect, url_for
 
 from data_model import Movie
 from datamanager.sqlite_data_manager import SQLiteDataManager
@@ -9,7 +10,8 @@ app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'data', 'moviwebapp.db')}"
+    'SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR,
+                                                           'data', 'moviwebapp.db')}"
 
 data_manager = SQLiteDataManager(app)
 
@@ -18,13 +20,34 @@ data_manager = SQLiteDataManager(app)
 def home():
     return render_template("home.html")
 
-
-@app.route('/users/<int:user_id>')
+@app.route('/users/<int:user_id>', methods=["GET", "POST"])
 def user_movies(user_id):
-    """Displays all movies associated with a specific user."""
-    movies = data_manager.get_user_movies(user_id)
+    if request.method == "POST":
+        action = request.form.get("action")
+        movie_id = request.form.get("movie_id")
 
-    return render_template('user_movies.html', movies=movies, user_id=user_id)
+        if action == "add":
+
+            movie_id = request.form.get('movie')
+
+            data_manager.add_movie_to_user(movie_id, user_id)
+            return redirect(url_for('user_movies'))
+
+        elif action == "update_rating":
+            rating = float(request.form.get("rating"))
+            data_manager.update_movie_rating(movie_id, user_id, rating)
+
+        elif action == "delete":
+            data_manager.delete_user_movie(user_id, movie_id)
+
+        return redirect(url_for("user_movies", user_id=user_id))
+
+    user_movies = data_manager.get_user_movies(user_id)
+
+
+    return render_template("user_movies.html",
+                           user_id=user_id,
+                           user_movies=user_movies)
 
 
 @app.route('/users')
@@ -36,7 +59,8 @@ def list_users():
 @app.route('/movies')
 def list_movies():
     movies = data_manager.get_all_movies()
-    return render_template('list_movies.html', movies=movies, active_page='movies')
+    return render_template('list_movies.html', movies=movies,
+                           active_page='movies')
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
@@ -45,13 +69,16 @@ def add_user():
     if request.method == 'POST':
         username = request.form.get('name')
         if not username:
-            return render_template('add_user.html', error='Username is required')
+            return render_template('add_user.html',
+                                   error='Username is required')
 
         result = data_manager.add_user(username)
         if not result:
-            return render_template('add_user.html', error='Failed to add user (maybe duplicate?)')
+            return render_template('add_user.html',
+                                   error='Failed to add user (maybe duplicate?)')
 
-        return render_template('add_user.html', message=f'User added successfully')
+        return render_template('add_user.html',
+                               message=f'User added successfully')
 
     return render_template('add_user.html')
 
@@ -68,14 +95,9 @@ def add_movie():
         if all([title, director, year]):
             try:
                 release_year = int(year)
-
-                if not rating:
-                    rating = 0.0
-                else:
-                    rating = float(rating.replace(",", "."))
-
+                rating = float(rating.replace(",", ".")) if rating else 0.0
                 new_movie = Movie(
-                    name=title,
+                    title=title,
                     director=director,
                     release_year=release_year,
                     rating=rating,
@@ -84,14 +106,18 @@ def add_movie():
 
                 result = data_manager.add_movie(new_movie)
                 if not result:
-                    return render_template('error.html', error="Movie already exists.")
+                    return render_template('error.html',
+                                           error="Movie already exists.")
 
-                return render_template('add_movie.html', message="Movie added successfully.")
+                return render_template('add_movie.html',
+                                       message="Movie added successfully.")
 
             except (ValueError, TypeError):
-                return render_template('error.html', error="Invalid year or rating format.")
+                return render_template('error.html',
+                                       error="Invalid year or rating format.")
 
-        return render_template('error.html', error="Missing required movie data.")
+        return render_template('error.html',
+                               error="Missing required movie data.")
 
     return render_template('add_movie.html')
 
@@ -124,6 +150,31 @@ def update_movie(movie_id):
                                        error="No update was made")
 
     return render_template('update_movie.html', movie=movie)
+
+
+@app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['POST'])
+def delete_movie(user_id, movie_id):
+    """Deletes a movie from a user's collection."""
+    data_manager.delete_movie(user_id, movie_id)
+    return redirect(url_for('user_movies', user_id=user_id))
+
+
+@app.route('/fetch_movie', methods=['GET', 'POST'])
+def fetch_movie_data():
+    """Fetches movie data from an external API (OMDb)."""
+    user_id = request.args.get('user_id')
+
+    if request.method == 'POST':
+        movie_title = request.form.get('title')
+        if movie_title:
+            movie_data = fetch_movie_data(movie_title)
+            if 'error' in movie_data:
+                return render_template('fetch_movie.html',
+                                       error=movie_data['error'], user_id=user_id)
+            return render_template('fetch_movie.html',
+                                   movie=movie_data, user_id=user_id)
+
+    return render_template('fetch_movie.html', user_id=user_id)
 
 
 @app.errorhandler(400)

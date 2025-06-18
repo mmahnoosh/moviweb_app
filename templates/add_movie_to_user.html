@@ -1,0 +1,21 @@
+<form method="POST" action="{{ url_for('add_movie_to_user') }}">
+    <label for="movie">Select a Film:</label>
+    <select name="movie" id="movie" required>
+        <option value="" disabled selected>-- Please choose --</option>
+        {% for movie in all_movies %}
+            <option value="{{ movie.id }}">{{ movie.title }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">ADD</button>
+</form>
+
+<h2>Your Movies:</h2>
+<ul>
+    {% if user_movies %}
+        {% for movie in user_movies %}
+            <li>{{ movie.title }}</li>
+        {% endfor %}
+    {% else %}
+        <li>No movies added.</li>
+    {% endif %}
+</ul>

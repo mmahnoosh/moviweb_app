@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Filmdaten abrufen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='fetch_movie.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Film suchen</h1>
+        <form method="POST">
+            <label for="title">Filmtitel:</label>
+            <input type="text" id="title" name="title" required>
+            <button type="submit">Suchen</button>
+        </form>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if movie %}
+            <div class="movie-info">
+                <h2>{{ movie.Title }}</h2>
+                <p><strong>Regisseur:</strong> {{ movie.Director }}</p>
+                <p><strong>Erscheinungsjahr:</strong> {{ movie.Year }}</p>
+                <p><strong>IMDB Bewertung:</strong> {{ movie.imdbRating }}</p>
+                {% if movie.Poster and movie.Poster != "N/A" %}
+                    <img class="movie-poster" src="{{ movie.Poster }}" alt="Filmplakat">
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if user_id %}
+            <div class="user-id">Benutzer-ID: {{ user_id }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

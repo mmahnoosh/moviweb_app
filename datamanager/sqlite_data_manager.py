@@ -77,9 +77,24 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.rollback()
             return None
 
+    def add_movie_to_user(self, movie_id, user_id):
+        try:
+            existing = self.db.session.query(UserMovies).filter_by(movie_id=movie_id,
+                                                                   user_id=user_id).first()
+            if existing:
+                return existing
+            new_entry = UserMovies(movie_id=movie_id, user_id=user_id)
+            self.db.session.add(new_entry)
+            self.db.session.commit()
+            return new_entry
+
+        except SQLAlchemyError:
+            self.db.session.rollback()
+            return None
+
     def add_movie(self, movie):
         try:
-            existing_movie = self.db.session.query(Movie).filter_by(name=movie.name).first()
+            existing_movie = self.db.session.query(Movie).filter_by(title=movie.title).first()
             if existing_movie:
                 return None
             return self.add_item(movie)

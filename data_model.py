@@ -22,7 +22,7 @@ class User(db.Model):
 class Movie(db.Model):
     __tablename__ = 'movie'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)
+    title = Column(String(100), nullable=False)
     director = Column(String(100), nullable=True)
     release_year = Column(Integer, nullable=False)
     rating = Column(Float, nullable=True)
