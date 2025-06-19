@@ -3,22 +3,24 @@
 {% set active_page = 'users' %}
 
 {% block content %}
-    <h1>Add a New User</h1>
+    <div style="max-width: 400px; margin: 0 auto; padding: 1.5em; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h2 style="text-align: center;">Add a New User</h2>
 
-    {% if error %}
-        <div class="error-message">{{ error }}</div>
-    {% endif %}
-    {% if message %}
-        <div class="success-message">{{ message }}</div>
-    {% endif %}
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if message %}
+            <div class="success-message">{{ message }}</div>
+        {% endif %}
 
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1em;">
-        <form method="post" class="form-box" style="flex: 1;">
+        <form method="post" class="form-box">
             <label for="name">Username:</label>
-            <input type="text" id="name" name="name" placeholder="Enter username" required>
-            <button type="submit" class="button button-green">➕ Add User</button>
-        </form>
+            <input type="text" id="name" name="name" placeholder="Enter username" required style="width: 100%; margin-bottom: 1em;">
 
-        <a href="{{ url_for('list_users') }}" class="button button-primary" style="height: fit-content;">🔙 Back</a>
+            <div style="display: flex; justify-content: space-between;">
+                <button type="submit" class="button button-green">➕ Add User</button>
+                <a href="{{ url_for('list_users') }}" class="button button-primary">🔙 Back</a>
+            </div>
+        </form>
     </div>
 {% endblock %}
