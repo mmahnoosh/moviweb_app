@@ -1,4 +1,5 @@
 import os
+
 import requests
 from dotenv import load_dotenv
 from requests.exceptions import HTTPError, ConnectionError, Timeout
@@ -43,4 +44,3 @@ def check_poster_availability(url):
         return url
     except(ConnectionError, Timeout, HTTPError):
         return "/static/fallback_poster.jpeg"
-

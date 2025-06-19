@@ -7,27 +7,27 @@
         <h1>Your Movie Collection</h1>
 
         <div class="movie-grid">
-            {% for movie in user_movies %}
+            {% for um in user_movies %}
                 <div class="movie-card">
-                    {% if movie.poster %}
-                        <img src="{{ movie.poster }}" alt="Poster of {{ movie.title }}" class="movie-poster">
+                    {% if um.movie.poster %}
+                        <img src="{{ um.movie.poster }}" alt="Poster of {{ um.movie.title }}" class="movie-poster">
                     {% else %}
                         <div class="movie-poster placeholder">
                             <p>No Image</p>
                         </div>
                     {% endif %}
-                    <h3>{{ movie.title }}</h3>
-                    <p><strong>Year:</strong> {{ movie.release_year or 'Unknown' }}</p>
-                    <p><strong>Director:</strong> {{ movie.director or 'Unknown' }}</p>
-                    <p><strong>Rating:</strong> {{ movie.rating or 'N/A' }}</p>
+                    <h3>{{ um.movie.title }}</h3>
+                    <p><strong>Year:</strong> {{ um.movie.release_year or 'Unknown' }}</p>
+                    <p><strong>Director:</strong> {{ um.movie.director or 'Unknown' }}</p>
+                    <p><strong>Rating:</strong> {{ um.movie_rating or 'N/A' }}</p>
 
-                    <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="POST">
+                    <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=um.movie.id) }}" method="POST">
                         {# Optional: CSRF token if Flask-WTF is used #}
                         {% if csrf_token %}{{ csrf_token() }}{% endif %}
                         <button type="submit" class="button button-danger">🗑️ Delete</button>
                     </form>
 
-                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" class="button button-primary">✏️ Edit</a>
+                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=um.movie.id) }}" class="button button-primary">✏️ Edit</a>
                 </div>
             {% endfor %}
         </div>

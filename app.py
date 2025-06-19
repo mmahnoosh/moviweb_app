@@ -43,7 +43,6 @@ def list_user_movies(user_id):
                            user_movies=user_movies)
 
 
-
 @app.route('/users/add', methods=['GET', 'POST'])
 def add_user():
     """Allows a new user to be added."""
@@ -64,39 +63,40 @@ def add_user():
     return render_template('add_user.html')
 
 
-
 @app.route('/users/<int:user_id>/update_movie/<int:movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
     """
       Updates the rating of a specific movie.
       Displays current data and accepts new rating via form.
     """
-    movie = data_manager.get_movie(movie_id)
+    movie = data_manager.get_user_movie(user_id, movie_id)
     if not movie:
         abort(404, description="Movie not found")
 
     if request.method == 'POST':
         rating = request.form.get('rating')
         if not rating:
-            return render_template('update_movie.html', movie=movie)
+            return render_template('update_movie.html', movie=movie,
+                                   user_id=user_id)
         rating_str = rating.replace(',', '.')
 
         try:
             rating_float = float(rating_str)
             if not 0.0 < rating_float < 10.0:
                 return render_template('update_movie.html', movie=movie,
-                                       error="Rating must be between 0 and 10")
+                                       error="Rating must be between 0 and 10", user_id=user_id)
         except (ValueError, TypeError):
             return render_template('update_movie.html', movie=movie,
-                                   error="Please enter a valid rating between 0 and 10.")
+                                   error="Please enter a valid rating between 0 and 10.",
+                                   user_id=user_id)
 
         result = data_manager.update_movie(movie, rating_float)
         if not result:
             if not result:
                 return render_template("update_movie.html", movie=movie,
-                                       error="No update was made")
+                                       error="No update was made", user_id=user_id)
 
-    return render_template('update_movie.html', movie=movie)
+    return render_template('update_movie.html', movie=movie, user_id=user_id)
 
 
 @app.route('/users/delete/<int:user_id>', methods=['POST'])
@@ -114,6 +114,7 @@ def list_movies():
 
 @app.route('/users/<int:user_id>/add_movie', methods=["GET", "POST"])
 def add_movie(user_id):
+    """add a movie in the database."""
     if request.method == 'POST':
         movie_title = request.form.get('Title')
         if movie_title:
@@ -123,25 +124,24 @@ def add_movie(user_id):
                                        error=movie['error'], user_id=user_id)
             movie['Poster'] = check_poster_availability(movie.get('Poster', ''))
             return render_template('add_movie.html', movie=movie,
-                                    user_id=user_id)
+                                   user_id=user_id)
 
         movie_data = request.form.get("movie_json")
         if movie_data:
             try:
-                movie_data = json.loads(movie_data.replace("'",'"'))
+                movie_data = json.loads(movie_data.replace("'", '"'))
             except (TypeError, JSONDecodeError):
                 return render_template("add_movie.html",
                                        error="Error fetching data", user_id=user_id)
 
             error = data_manager.add_movie(movie_data, user_id)
             if error:
-               return render_template('add_movie.html', error=error,
-                                      user_id=user_id)
+                return render_template('add_movie.html', error=error,
+                                       user_id=user_id)
             return render_template('add_movie.html',
                                    error=f"{movie_data.get('Title')} added successfully",
                                    user_id=user_id)
     return render_template('add_movie.html', user_id=user_id)
-
 
 
 @app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['POST'])

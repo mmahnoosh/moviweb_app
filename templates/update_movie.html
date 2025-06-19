@@ -14,10 +14,10 @@
 
     {% if movie %}
         <div class="movie-info">
-            <p><strong>Title:</strong> {{ movie.title }}</p>
-            <p><strong>Director:</strong> {{ movie.director or 'N/A' }}</p>
-            <p><strong>Year:</strong> {{ movie.release_year }}</p>
-            <p><strong>Current Rating:</strong> {{ movie.rating or 'N/A' }}</p>
+            <p><strong>Title:</strong> {{ movie.movie.title }}</p>
+            <p><strong>Director:</strong> {{ movie.movie.director or 'N/A' }}</p>
+            <p><strong>Year:</strong> {{ movie.movie.release_year }}</p>
+            <p><strong>Current Rating:</strong> {{ movie.movie_rating or 'N/A' }}</p>
         </div>
 
         <form method="post" class="form-box">
@@ -30,6 +30,6 @@
     {% endif %}
 
     <div class="actions">
-        <a href="{{ url_for('list_movies') }}" class="button">🔙 Back to Movies</a>
+        <a href="/users/{{user_id}}" class="button">🔙 Back to Movies</a>
     </div>
 {% endblock %}
