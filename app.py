@@ -4,9 +4,8 @@ from json import JSONDecodeError
 
 from flask import Flask, render_template, request, abort, redirect, url_for
 
-from data_model import Movie
 from datamanager.sqlite_data_manager import SQLiteDataManager
-from services.omdb_api import fetch_movie_data as fetch_from_api
+from services.omdb_api import fetch_movie_data as fetch_from_api, check_poster_availability
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -74,7 +73,7 @@ def update_movie(user_id, movie_id):
     """
     movie = data_manager.get_movie(movie_id)
     if not movie:
-        abort(400, description="Movie not found")
+        abort(404, description="Movie not found")
 
     if request.method == 'POST':
         rating = request.form.get('rating')
@@ -106,14 +105,11 @@ def delete_user(user_id):
     return redirect(url_for('list_users'))
 
 
-
-
 @app.route('/movies')
 def list_movies():
     """Lists all movies in the database."""
     movies = data_manager.get_all_movies()
     return render_template('list_movies.html', movies=movies)
-
 
 
 @app.route('/users/<int:user_id>/add_movie', methods=["GET", "POST"])
@@ -125,6 +121,7 @@ def add_movie(user_id):
             if 'error' in movie:
                 return render_template('add_movie.html',
                                        error=movie['error'], user_id=user_id)
+            movie['Poster'] = check_poster_availability(movie.get('Poster', ''))
             return render_template('add_movie.html', movie=movie,
                                     user_id=user_id)
 
@@ -151,7 +148,7 @@ def add_movie(user_id):
 def delete_movie(user_id, movie_id):
     """Deletes a movie from a user's collection."""
     data_manager.delete_movie(user_id, movie_id)
-    return redirect(url_for('user_movies', user_id=user_id))
+    return redirect(url_for('list_user_movies', user_id=user_id))
 
 
 @app.errorhandler(400)

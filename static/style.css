@@ -192,7 +192,7 @@
   }
 
  .movie-poster {
-  width: 100%;
+  width: 200px;
   height: 300px; /* Einheitliche Höhe */
   object-fit: cover; /* Schneidet das Bild passend zu */
   border-radius: 8px;
@@ -223,15 +223,4 @@
     background-color: #28a745;
     color: white;
   }
-
-.movie-poster.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 300px;
-  background-color: #ccc;
-  color: #555;
-  font-style: italic;
-  border-radius: 8px;
-}
 

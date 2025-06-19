@@ -34,3 +34,13 @@ def fetch_movie_data(title):
         'imdbRating': movie.get('imdbRating'),
         'Poster': movie.get('Poster')
     }
+
+
+def check_poster_availability(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return url
+    except(ConnectionError, Timeout, HTTPError):
+        return "/static/fallback_poster.jpeg"
+

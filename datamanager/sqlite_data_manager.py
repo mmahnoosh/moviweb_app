@@ -4,7 +4,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from data_model import User, Movie, UserMovies
 from datamanager.data_manager_interface import DataManagerInterface
 
-
 class SQLiteDataManager(DataManagerInterface):
 
     def __init__(self, app):
@@ -79,13 +78,15 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.rollback()
             return None
 
-    def add_movie_to_user(self, movie_id, user_id):
+    def add_movie_to_user(self, movie, user_id):
         try:
-            existing = self.db.session.query(UserMovies).filter_by(movie_id=movie_id,
+            existing = self.db.session.query(UserMovies).filter_by(movie_id=movie.id,
                                                                    user_id=user_id).first()
             if existing:
                 return "Movie already exists"
-            new_entry = UserMovies(movie_id=movie_id, user_id=user_id)
+
+            new_entry = UserMovies(movie_id=movie.id, user_id=user_id, movie_rating=movie.rating)
+
             self.db.session.add(new_entry)
             self.db.session.commit()
             return None
@@ -98,18 +99,19 @@ class SQLiteDataManager(DataManagerInterface):
         try:
             existing_movie = self.db.session.query(Movie).filter_by(title=movie.get("Title")).first()
             if existing_movie:
-                return self.add_movie_to_user(existing_movie.id, user_id)
+                return self.add_movie_to_user(existing_movie, user_id)
             new_movie = Movie(
                 title=movie.get('Title'),
                 director=movie.get('Director'),
                 release_year=movie.get('Year'),
                 rating=movie.get('imdbRating'),
-                poster=movie.get('Poster', '/static/fallback_poster.jpeg')
+                poster=movie.get('Poster')
+
             )
             new_movie = self.add_item(new_movie)
             if not new_movie:
                 return "Error with the database"
-            return self.add_movie_to_user(new_movie.id, user_id)
+            return self.add_movie_to_user(new_movie, user_id)
 
         except SQLAlchemyError:
             self.db.session.rollback()
@@ -134,7 +136,7 @@ class SQLiteDataManager(DataManagerInterface):
             return None
 
 
-    def delete_user_movie(self, movie_id, user_id):
+    def delete_movie(self, user_id, movie_id):
         try:
             movie = self.db.session.get(Movie, movie_id)
             if not movie:
