@@ -8,11 +8,11 @@
       <div class="card">
         <img src="{{ movie.poster_url }}" alt="{{ movie.title }} Poster" />
         <h3>{{ movie.title }}</h3>
-        <p>{{ movie.description }}</p>
-        <a href="{{ url_for('fetch_movie_data', movie_id=movie.id) }}" class="button button-success">Details</a>
+
+
       </div>
     {% else %}
-      <p>Keine Filme gefunden.</p>
+      <p>Not found.</p>
     {% endfor %}
   </div>
 {% endblock %}

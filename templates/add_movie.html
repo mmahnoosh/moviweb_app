@@ -1,63 +1,44 @@
 <!-- templates/add_movie.html -->
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Filmdaten abrufen</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem;
-            background-color: #f9f9f9;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .error {
-            color: red;
-            margin-top: 1rem;
-        }
-        .movie {
-            margin-top: 2rem;
-        }
-        label, input, button {
-            display: block;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-    </style>
+    <title>Fetch Movie Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Film search</h1>
+    <div class="main-container">
+        <div class="card" style="max-width: 600px; margin: auto;">
+            <h2>Movie Search</h2>
 
-        <form method="POST" action="/users/{{user_id}}/add_movie">
-            <label for="title">Filmtitel:</label>
-            <input type="text" id="title" name="Title" placeholder="Movie title" required>
-            <button type="submit">search</button>
-        </form>
+            <form method="POST" action="/users/{{ user_id }}/add_movie">
+                <label for="title">Movie Title:</label>
+                <input type="text" id="title" name="Title" placeholder="Enter movie title" required>
+                <button type="submit" class="button button-success">🔍 Search</button>
+            </form>
 
-        {% if error %}
-            <div class="error">Error: {{ error }}</div>
-        {% endif %}
+            {% if error %}
+                <div class="error message-box"> {{ error }}</div>
+            {% endif %}
 
-        {% if movie %}
-            <div class="movie">
-                <h2>{{ movie.Title }} ({{ movie.Year }})</h2>
-                <p><strong>Regisseur:</strong> {{ movie.Director }}</p>
-                <p><strong>IMDb-Bewertung:</strong> {{ movie.imdbRating }}</p>
-                <img src="{{ movie.Poster }}" alt="Poster von {{ movie.Title }}" style="max-width: 100%;">
-            </div>
-          <form method="POST" action="/users/{{user_id}}/add_movie">
-            <input type="hidden" name="movie_json" value="{{movie}}">
-            <button type="submit">Add movie</button>
-        </form>
-        {% endif %}
+            {% if movie %}
+                <div class="movie" style="margin-top: 2em;">
+                    <h3>{{ movie.Title }} ({{ movie.Year }})</h3>
+                    <p><strong>Director:</strong> {{ movie.Director }}</p>
+                    <p><strong>IMDb Rating:</strong> {{ movie.imdbRating }}</p>
+                    <img src="{{ movie.Poster }}" alt="Poster of {{ movie.Title }}" style="max-width: 100%; border-radius: 8px;">
+                </div>
+
+                <form method="POST" action="/users/{{ user_id }}/add_movie">
+                    <input type="hidden" name="movie_json" value="{{ movie }}">
+                    <button type="submit" class="button button-success">➕ Add Movie</button>
+
+                </form>
+            {% endif %}
+
+            <!-- Single Back Button -->
+            <a href="{{ url_for('list_users') }}" class="button button-danger" style="margin-top: 1.5em;">🔙 Back</a>
+        </div>
     </div>
 </body>
 </html>

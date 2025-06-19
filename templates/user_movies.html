@@ -11,6 +11,10 @@
                 <div class="movie-card">
                     {% if movie.poster %}
                         <img src="{{ movie.poster }}" alt="Poster of {{ movie.title }}" class="movie-poster">
+                    {% else %}
+                        <div class="movie-poster placeholder">
+                            <p>No Image</p>
+                        </div>
                     {% endif %}
                     <h3>{{ movie.title }}</h3>
                     <p><strong>Year:</strong> {{ movie.release_year or 'Unknown' }}</p>
