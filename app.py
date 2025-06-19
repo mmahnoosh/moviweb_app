@@ -1,4 +1,6 @@
+import json
 import os
+from json import JSONDecodeError
 
 from flask import Flask, render_template, request, abort, redirect, url_for
 
@@ -119,13 +121,28 @@ def add_movie(user_id):
     if request.method == 'POST':
         movie_title = request.form.get('Title')
         if movie_title:
-            movie_data = fetch_from_api(movie_title)
-            if 'error' in movie_data:
+            movie = fetch_from_api(movie_title)
+            if 'error' in movie:
                 return render_template('add_movie.html',
-                                       error=movie_data['error'], user_id=user_id)
-            return render_template('add_movie.html',
-                                   movie=movie_data, user_id=user_id)
+                                       error=movie['error'], user_id=user_id)
+            return render_template('add_movie.html', movie=movie,
+                                    user_id=user_id)
 
+        movie_data = request.form.get("movie_json")
+        if movie_data:
+            try:
+                movie_data = json.loads(movie_data.replace("'",'"'))
+            except (TypeError, JSONDecodeError):
+                return render_template("add_movie.html",
+                                       error="Error fetching data", user_id=user_id)
+
+            error = data_manager.add_movie(movie_data, user_id)
+            if error:
+               return render_template('add_movie.html', error=error,
+                                      user_id=user_id)
+            return render_template('add_movie.html',
+                                   error=f"{movie_data.get('Title')} added successfully",
+                                   user_id=user_id)
     return render_template('add_movie.html', user_id=user_id)
 
 

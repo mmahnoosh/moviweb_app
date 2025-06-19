@@ -36,7 +36,7 @@
     <div class="container">
         <h1>Film search</h1>
 
-        <form method="POST" action="{{ url_for('add_movie') }}?user_id={{ user_id }}">
+        <form method="POST" action="/users/{{user_id}}/add_movie">
             <label for="title">Filmtitel:</label>
             <input type="text" id="title" name="Title" placeholder="Movie title" required>
             <button type="submit">search</button>
@@ -49,15 +49,12 @@
         {% if movie %}
             <div class="movie">
                 <h2>{{ movie.Title }} ({{ movie.Year }})</h2>
-                <p><strong>Genre:</strong> {{ movie.Genre }}</p>
                 <p><strong>Regisseur:</strong> {{ movie.Director }}</p>
                 <p><strong>IMDb-Bewertung:</strong> {{ movie.imdbRating }}</p>
-                <p><strong>Inhalt:</strong> {{ movie.Plot }}</p>
                 <img src="{{ movie.Poster }}" alt="Poster von {{ movie.Title }}" style="max-width: 100%;">
             </div>
-          <form method="POST" action="{{ url_for('add_movie') }}?user_id={{ user_id }}">
-            <label for="title">Filmtitel:</label>
-            <input type="text" id="add-title" name="Title" placeholder="Movie title" required>
+          <form method="POST" action="/users/{{user_id}}/add_movie">
+            <input type="hidden" name="movie_json" value="{{movie}}">
             <button type="submit">Add movie</button>
         </form>
         {% endif %}

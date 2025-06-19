@@ -10,14 +10,6 @@ class SQLiteDataManager(DataManagerInterface):
     def __init__(self, app):
         self.db = SQLAlchemy(app)
 
-    def add_item(self, item):
-        try:
-            self.db.session.add(item)
-            self.db.session.commit()
-            return item
-        except SQLAlchemyError:
-            self.db.session.rollback()
-            return None
 
     def get_all_users(self):
         try:
@@ -66,6 +58,16 @@ class SQLiteDataManager(DataManagerInterface):
         except SQLAlchemyError:
             return []
 
+    def add_item(self, item):
+        try:
+            self.db.session.add(item)
+            self.db.session.commit()
+            self.db.session.refresh(item)
+            return item
+        except SQLAlchemyError:
+            self.db.session.rollback()
+            return None
+
     def add_user(self, username):
         try:
             existing_user = self.db.session.query(User).filter_by(name=username).first()
@@ -82,22 +84,32 @@ class SQLiteDataManager(DataManagerInterface):
             existing = self.db.session.query(UserMovies).filter_by(movie_id=movie_id,
                                                                    user_id=user_id).first()
             if existing:
-                return existing
+                return "Movie already exists"
             new_entry = UserMovies(movie_id=movie_id, user_id=user_id)
             self.db.session.add(new_entry)
             self.db.session.commit()
-            return new_entry
+            return None
 
         except SQLAlchemyError:
             self.db.session.rollback()
-            return None
+            return "Error with the database"
 
-    def add_movie(self, movie):
+    def add_movie(self, movie, user_id):
         try:
-            existing_movie = self.db.session.query(Movie).filter_by(title=movie.title).first()
+            existing_movie = self.db.session.query(Movie).filter_by(title=movie.get("Title")).first()
             if existing_movie:
-                return None
-            return self.add_item(movie)
+                return self.add_movie_to_user(existing_movie.id, user_id)
+            new_movie = Movie(
+                title=movie.get('Title'),
+                director=movie.get('Director'),
+                release_year=movie.get('Year'),
+                rating=movie.get('imdbRating'),
+                poster=movie.get('Poster', '/static/fallback_poster.jpeg')
+            )
+            new_movie = self.add_item(new_movie)
+            if not new_movie:
+                return "Error with the database"
+            return self.add_movie_to_user(new_movie.id, user_id)
 
         except SQLAlchemyError:
             self.db.session.rollback()
