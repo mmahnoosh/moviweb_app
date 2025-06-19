@@ -1,25 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Movie List{% endblock %}
-{% set active_page = 'movies' %}
+
+{% block title %}Movies{% endblock %}
 
 {% block content %}
-    <h1>Movie Library</h1>
-    {% if movies %}
-        <div class="user-grid">
-            {% for movie in movies %}
-                <div class="user-card">
-                    {% if movie.poster %}
-                        <img src="{{ movie.poster }}" alt="{{ movie.title }} Poster" class="poster">
-                    {% endif %}
-                    <p><strong>ID:</strong> {{ movie.id }}</p>
-                    <p><strong>Title:</strong> {{ movie.title }}</p>
-                    <p><strong>Director:</strong> {{ movie.director or 'Unknown' }}</p>
-                    <p><strong>Year:</strong> {{ movie.release_year }}</p>
-                    <p><strong>Rating:</strong> {{ movie.rating or 'N/A' }}</p>
-                </div>
-            {% endfor %}
-        </div>
+  <div class="movie-grid">
+    {% for movie in movies %}
+      <div class="card">
+        <img src="{{ movie.poster_url }}" alt="{{ movie.title }} Poster" />
+        <h3>{{ movie.title }}</h3>
+        <p>{{ movie.description }}</p>
+        <a href="{{ url_for('fetch_movie_data', movie_id=movie.id) }}" class="button button-success">Details</a>
+      </div>
     {% else %}
-        <p>No movies found.</p>
-    {% endif %}
+      <p>Keine Filme gefunden.</p>
+    {% endfor %}
+  </div>
 {% endblock %}

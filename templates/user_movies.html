@@ -3,15 +3,6 @@
 {% set active_page = 'users' %}
 
 {% block content %}
-
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Movie Collection</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
     <div class="container">
         <h1>Your Movie Collection</h1>
 
@@ -19,32 +10,27 @@
             {% for movie in user_movies %}
                 <div class="movie-card">
                     {% if movie.poster %}
-                        <img src="{{ movie.poster }}" alt="Movie Poster" class="movie-poster">
+                        <img src="{{ movie.poster }}" alt="Poster of {{ movie.title }}" class="movie-poster">
                     {% endif %}
                     <h3>{{ movie.title }}</h3>
-                    <p><strong>Year:</strong> {{ movie.release_year }}</p>
-                    <p><strong>Director:</strong> {{ movie.director }}</p>
-                    <p><strong>Rating:</strong> {{ movie.rating }}</p>
+                    <p><strong>Year:</strong> {{ movie.release_year or 'Unknown' }}</p>
+                    <p><strong>Director:</strong> {{ movie.director or 'Unknown' }}</p>
+                    <p><strong>Rating:</strong> {{ movie.rating or 'N/A' }}</p>
 
                     <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="POST">
-                        <button type="submit" class="button delete-button">Delete User</button>
+                        {# Optional: CSRF token if Flask-WTF is used #}
+                        {% if csrf_token %}{{ csrf_token() }}{% endif %}
+                        <button type="submit" class="button button-danger">🗑️ Delete</button>
                     </form>
 
-                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" class="button edit-button">Edit</a>
+                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" class="button button-primary">✏️ Edit</a>
                 </div>
             {% endfor %}
         </div>
 
-        <div class="top-buttons">
-            <form method="GET" action="{{ url_for('fetch_movie_data') }}">
-                <input type="hidden" name="user_id" value="{{ user_id }}">
-                <button type="submit" class="button">Search and Add Movie</button>
-            </form>
-
-            <a href="{{ url_for('home') }}" class="button">Back to Home</a>
+        <div class="top-buttons" style="margin-top: 2em;">
+            <a href="{{ url_for('fetch_movie_data', user_id=user_id) }}" class="button button-green">🔍 Search and Add Movie</a>
+            <a href="{{ url_for('home') }}" class="button button-primary">🏠 Back to Home</a>
         </div>
-
     </div>
-</body>
-</html>
 {% endblock %}

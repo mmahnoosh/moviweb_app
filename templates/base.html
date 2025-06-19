@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>{% block title %}Movie App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -10,8 +10,8 @@
     <div class="header-container">
         <div class="breadcrumb">
             <a href="{{ url_for('home') }}" class="{% if active_page == 'home' %}active{% endif %}">Home</a>
-            <a href="{{ url_for('list_movies') }}" class="{% if active_page == 'movies' %}active{% endif %}">Movies</a>
-            <a href="{{ url_for('list_users') }}" class="{% if active_page == 'users' %}active{% endif %}">Users</a>
+            <a href="{{ url_for('list_movies') }}" class="{% if active_page == 'movies' %}active{% endif %}">Movie</a>
+            <a href="{{ url_for('list_users') }}" class="{% if active_page == 'users' %}active{% endif %}">User</a>
         </div>
     </div>
 

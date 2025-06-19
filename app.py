@@ -22,6 +22,13 @@ def home():
     return render_template("home.html")
 
 
+@app.route('/users')
+def list_users():
+    """Lists all registered users."""
+    users = data_manager.get_all_users()
+    return render_template('list_users.html', users=users)
+
+
 @app.route('/users/<int:user_id>', methods=["GET"])
 def list_user_movies(user_id):
     """
@@ -34,24 +41,6 @@ def list_user_movies(user_id):
                            user_id=user_id,
                            user_movies=user_movies)
 
-
-@app.route('/users/delete/<int:user_id>', methods=['POST'])
-def delete_user(user_id):
-    data_manager.delete_user(user_id)
-    return redirect(url_for('list_users'))
-
-@app.route('/users')
-def list_users():
-    """Lists all registered users."""
-    users = data_manager.get_all_users()
-    return render_template('list_users.html', users=users)
-
-
-@app.route('/movies')
-def list_movies():
-    """Lists all movies in the database."""
-    movies = data_manager.get_all_movies()
-    return render_template('list_movies.html', movies=movies)
 
 
 @app.route('/users/add', methods=['GET', 'POST'])
@@ -73,44 +62,6 @@ def add_user():
 
     return render_template('add_user.html')
 
-
-@app.route('/users/<int:user_id>/add_movie', methods=["GET", "POST"])
-def add_movie():
-    if request.method == "POST":
-        title = request.form.get('title', '').strip()
-        director = request.form.get('director', '').strip()
-        year = request.form.get('year', '').strip()
-        rating = request.form.get('rating', '').strip()
-        poster = request.form.get('poster', '').strip()
-
-        if all([title, director, year]):
-            try:
-                release_year = int(year)
-                rating = float(rating.replace(",", ".")) if rating else 0.0
-                new_movie = Movie(
-                    title=title,
-                    director=director,
-                    release_year=release_year,
-                    rating=rating,
-                    poster=poster
-                )
-
-                result = data_manager.add_movie(new_movie)
-                if not result:
-                    return render_template('error.html',
-                                           error="Movie already exists.")
-
-                return render_template('add_movie.html',
-                                       message="Movie added successfully.")
-
-            except (ValueError, TypeError):
-                return render_template('error.html',
-                                       error="Invalid year or rating format.")
-
-        return render_template('error.html',
-                               error="Missing required movie data.")
-
-    return render_template('add_movie.html')
 
 
 @app.route('/users/<int:user_id>/update_movie/<int:movie_id>', methods=['GET', 'POST'])
@@ -147,29 +98,43 @@ def update_movie(user_id, movie_id):
     return render_template('update_movie.html', movie=movie)
 
 
-@app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['POST'])
-def delete_movie(user_id, movie_id):
-    """Deletes a movie from a user's collection."""
-    data_manager.delete_movie(user_id, movie_id)
-    return redirect(url_for('user_movies', user_id=user_id))
+@app.route('/users/delete/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    data_manager.delete_user(user_id)
+    return redirect(url_for('list_users'))
 
 
-@app.route('/fetch_movie_data', methods=['GET', 'POST'])
-def fetch_movie_data():
-    """Fetches movie data from the OMDb API based on the title provided."""
-    user_id = request.args.get('user_id')
 
+
+@app.route('/movies')
+def list_movies():
+    """Lists all movies in the database."""
+    movies = data_manager.get_all_movies()
+    return render_template('list_movies.html', movies=movies)
+
+
+
+@app.route('/users/<int:user_id>/add_movie', methods=["GET", "POST"])
+def add_movie(user_id):
     if request.method == 'POST':
         movie_title = request.form.get('Title')
         if movie_title:
             movie_data = fetch_from_api(movie_title)
             if 'error' in movie_data:
-                return render_template('fetch_movie_data.html',
+                return render_template('add_movie.html',
                                        error=movie_data['error'], user_id=user_id)
-            return render_template('fetch_movie_data.html',
+            return render_template('add_movie.html',
                                    movie=movie_data, user_id=user_id)
 
-    return render_template('fetch_movie_data.html', user_id=user_id)
+    return render_template('add_movie.html', user_id=user_id)
+
+
+
+@app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['POST'])
+def delete_movie(user_id, movie_id):
+    """Deletes a movie from a user's collection."""
+    data_manager.delete_movie(user_id, movie_id)
+    return redirect(url_for('user_movies', user_id=user_id))
 
 
 @app.errorhandler(400)

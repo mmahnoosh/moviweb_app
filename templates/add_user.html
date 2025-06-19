@@ -12,13 +12,13 @@
         <div class="success-message">{{ message }}</div>
     {% endif %}
 
-    <form method="post" class="form-box">
-        <label for="name">Username:</label>
-        <input type="text" id="name" name="name" placeholder="Enter username" required>
-        <button type="submit" class="button">➕ Add User</button>
-    </form>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1em;">
+        <form method="post" class="form-box" style="flex: 1;">
+            <label for="name">Username:</label>
+            <input type="text" id="name" name="name" placeholder="Enter username" required>
+            <button type="submit" class="button button-green">➕ Add User</button>
+        </form>
 
-    <div class="actions">
-        <a href="{{ url_for('list_users') }}" class="button">🔙 Back</a>
+        <a href="{{ url_for('list_users') }}" class="button button-primary" style="height: fit-content;">🔙 Back</a>
     </div>
 {% endblock %}
