@@ -101,6 +101,7 @@ def update_movie(user_id, movie_id):
 
 @app.route('/users/delete/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
+    """delete a user in the database."""
     data_manager.delete_user(user_id)
     return redirect(url_for('list_users'))
 

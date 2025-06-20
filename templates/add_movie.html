@@ -3,41 +3,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fetch Movie Data</title>
+    <title>User's Movies</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="main-container">
-        <div class="card" style="max-width: 600px; margin: auto;">
-            <h2>Movie Search</h2>
+        <div class="card movie-card">
+            <h2 class="card-title">🎬 Movie Search</h2>
 
-            <form method="POST" action="/users/{{ user_id }}/add_movie">
-                <label for="title">Movie Title:</label>
-                <input type="text" id="title" name="Title" placeholder="Enter movie title" required>
+            <!-- Movie Search Form -->
+            <form method="POST" action="/users/{{ user_id }}/add_movie" class="form-section">
+                <label for="title" class="form-label">Movie Title:</label>
+                <input type="text" id="title" name="Title" placeholder="Enter movie title" required class="form-input">
                 <button type="submit" class="button button-success">🔍 Search</button>
             </form>
 
             {% if error %}
-                <div class="error message-box"> {{ error }}</div>
+                <div class="message-box error"> {{ error }}</div>
             {% endif %}
 
             {% if movie %}
-                <div class="movie" style="margin-top: 2em;">
-                    <h3>{{ movie.Title }} ({{ movie.Year }})</h3>
+                <!-- Movie Display -->
+                <div class="movie-info">
+                    <h3 class="movie-title">{{ movie.Title }} ({{ movie.Year }})</h3>
                     <p><strong>Director:</strong> {{ movie.Director }}</p>
-                    <p><strong>IMDb Rating:</strong> {{ movie.imdbRating }}</p>
-                    <img src="{{ movie.Poster }}" alt="Poster of {{ movie.Title }}" style="max-width: 100%; border-radius: 8px;">
+                    <p><strong>IMDb Rating:</strong> ⭐{{ movie.imdbRating }}</p>
+                    <img src="{{ movie.Poster }}" alt="Poster of {{ movie.Title }}" class="movie-poster">
                 </div>
 
-                <form method="POST" action="/users/{{ user_id }}/add_movie">
+                <!-- Movie Add Form -->
+                <form method="POST" action="/users/{{ user_id }}/add_movie" class="form-section">
                     <input type="hidden" name="movie_json" value="{{ movie }}">
                     <button type="submit" class="button button-success">➕ Add Movie</button>
-
                 </form>
             {% endif %}
 
-            <!-- Single Back Button -->
-            <a href="/users/{{user_id}}" class="button button-danger" style="margin-top: 1.5em;">🔙 Back</a>
+            <!-- Back Button -->
+            <div class="button-wrapper">
+                <a href="/users/{{user_id}}" class="button button-danger">🔙 Back</a>
+            </div>
         </div>
     </div>
 </body>

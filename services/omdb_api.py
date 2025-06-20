@@ -9,6 +9,7 @@ OMDB_API_KEY = os.getenv("OMDB_API_KEY")
 
 
 def fetch_movie_data(title):
+    """Fetches movie data from the OMDb API for a given title."""
     fetch_url = f"https://www.omdbapi.com/?apikey={OMDB_API_KEY}&t={title}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -38,6 +39,7 @@ def fetch_movie_data(title):
 
 
 def check_poster_availability(url):
+    """Checks if a poster URL is valid, returns fallback if not."""
     try:
         response = requests.get(url)
         response.raise_for_status()

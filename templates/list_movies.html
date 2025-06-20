@@ -3,14 +3,13 @@
 {% block title %}Movies{% endblock %}
 
 {% block content %}
-  <div class="movie-grid">
+<div class="movie-grid">
     {% for movie in movies %}
       <div class="card">
-        <img src="{{ movie.poster }}" alt="{{ movie.title }} Poster" />
+        <img src="{{ movie.poster }}" alt="{{ movie.title }} Poster"/>
         <h3>{{ movie.title }}</h3>
         <h4>{{movie.rating}}</h4>
-
-
+          <h5>{{movie.release_year}}</h5>
       </div>
     {% else %}
       <p>Not found.</p>

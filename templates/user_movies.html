@@ -27,13 +27,15 @@
                         <button type="submit" class="button button-danger">🗑️ Delete</button>
                     </form>
 
-                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=um.movie.id) }}" class="button button-primary">✏️ Edit</a>
+                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=um.movie.id) }}"
+                       class="button button-primary">✏️ Edit</a>
                 </div>
             {% endfor %}
         </div>
 
         <div class="top-buttons" style="margin-top: 2em;">
-            <a href="{{ url_for('add_movie', user_id=user_id) }}" class="button button-green">🔍 Search and Add Movie</a>
+            <a href="{{ url_for('add_movie', user_id=user_id) }}" class="button button-green">
+                🔍 Search and Add Movie</a>
             <a href="{{ url_for('home') }}" class="button button-primary">🏠 Back to Home</a>
         </div>
     </div>
