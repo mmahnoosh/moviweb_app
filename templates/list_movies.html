@@ -6,9 +6,9 @@
 <div class="movie-grid">
     {% for movie in movies %}
       <div class="card">
-        <img src="{{ movie.poster }}" alt="{{ movie.title }} Poster"/>
-        <h3>{{ movie.title }}</h3>
-        <h4>{{movie.rating}}</h4>
+        <img src="{{ movie.poster }}" alt="{{ movie.title }} Poster" class="movie-poster"/>
+          <h3>{{ movie.title }}</h3>
+          <h4>⭐{{movie.rating}}⭐</h4>
           <h5>{{movie.release_year}}</h5>
       </div>
     {% else %}

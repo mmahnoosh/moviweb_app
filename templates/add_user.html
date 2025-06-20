@@ -3,7 +3,8 @@
 {% set active_page = 'users' %}
 
 {% block content %}
-    <div style="max-width: 400px; margin: 0 auto; padding: 1.5em; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="max-width: 400px; margin: 0 auto; padding: 1.5em; border: 1px solid #ccc;
+    border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
         <h2 style="text-align: center;">Add a New User</h2>
 
         {% if error %}
@@ -15,11 +16,12 @@
 
         <form method="post" class="form-box">
             <label for="name">Username:</label>
-            <input type="text" id="name" name="name" placeholder="Enter username" required style="width: 100%; margin-bottom: 1em;">
+            <input type="text" id="name" name="name" placeholder="Enter username"
+                   required style="width: 100%; margin-bottom: 1em;">
 
             <div style="display: flex; justify-content: space-between;">
-                <button type="submit" class="button button-green">➕ Add User</button>
-                <a href="{{ url_for('list_users') }}" class="button button-primary">🔙 Back</a>
+                <button type="submit" class="button button-green">➕ Add User </button>
+                <a href="{{ url_for('list_users') }}" class="button button-primary">🔙 Back </a>
             </div>
         </form>
     </div>

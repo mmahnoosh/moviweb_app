@@ -23,13 +23,13 @@
         <form method="post" class="form-box">
             <label for="rating">New Rating (0–10):</label>
             <input type="text" id="rating" name="rating" placeholder="e.g. 7.8" required>
-            <button type="submit" class="button">💾 Update</button>
+            <button type="submit" class="button button-success">💾 Update</button>
         </form>
     {% else %}
         <p>Movie not found.</p>
     {% endif %}
 
     <div class="actions">
-        <a href="/users/{{user_id}}" class="button">🔙 Back to Movies</a>
+        <a href="/users/{{user_id}}" class="button button-primary">🔙 Back to Movies</a>
     </div>
 {% endblock %}

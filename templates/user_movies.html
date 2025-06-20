@@ -9,6 +9,7 @@
         <div class="movie-grid">
             {% for um in user_movies %}
                 <div class="movie-card">
+                    <div class="movie-info-box">
                     {% if um.movie.poster %}
                         <img src="{{ um.movie.poster }}" alt="Poster of {{ um.movie.title }}" class="movie-poster">
                     {% else %}
@@ -16,19 +17,23 @@
                             <p>No Image</p>
                         </div>
                     {% endif %}
-                    <h3>{{ um.movie.title }}</h3>
-                    <p><strong>Year:</strong> {{ um.movie.release_year or 'Unknown' }}</p>
-                    <p><strong>Director:</strong> {{ um.movie.director or 'Unknown' }}</p>
-                    <p><strong>Rating:</strong> {{ um.movie_rating or 'N/A' }}</p>
 
-                    <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=um.movie.id) }}" method="POST">
-                        {# Optional: CSRF token if Flask-WTF is used #}
-                        {% if csrf_token %}{{ csrf_token() }}{% endif %}
-                        <button type="submit" class="button button-danger">🗑️ Delete</button>
-                    </form>
+    <h3>{{ um.movie.title }}</h3>
+    <p><strong>Year:</strong> {{ um.movie.release_year or 'Unknown' }}</p>
+    <p><strong>Director:</strong> {{ um.movie.director or 'Unknown' }}</p>
+    <p><strong>Rating:</strong> {{ um.movie_rating or 'N/A' }}</p>
 
-                    <a href="{{ url_for('update_movie', user_id=user_id, movie_id=um.movie.id) }}"
-                       class="button button-primary">✏️ Edit</a>
+
+                    <div class="button-container">
+                        <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=um.movie.id) }}" method="POST">
+                            {% if csrf_token %}{{ csrf_token() }}{% endif %}
+                            <button type="submit" class="button button-danger">🗑️ Delete </button>
+                        </form>
+
+                        <a href="{{ url_for('update_movie', user_id=user_id, movie_id=um.movie.id) }}"
+                           class="button button-primary">✏️ Edit </a>
+                    </div>
+                        </div>
                 </div>
             {% endfor %}
         </div>
@@ -36,7 +41,9 @@
         <div class="top-buttons" style="margin-top: 2em;">
             <a href="{{ url_for('add_movie', user_id=user_id) }}" class="button button-green">
                 🔍 Search and Add Movie</a>
-            <a href="{{ url_for('home') }}" class="button button-primary">🏠 Back to Home</a>
+            <a href="{{ url_for('home') }}" class="button button-primary">🏠 Back to Home </a>
         </div>
     </div>
 {% endblock %}
+
+
