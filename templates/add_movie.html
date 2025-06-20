@@ -1,48 +1,39 @@
-<!-- templates/add_movie.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User's Movies</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Add Movie{% endblock %}
+{% set active_page = 'users' %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto; padding: 1.5em; border: 1px solid #ccc;
+    border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);background-color: rgba(0, 0, 0, 0.6);
+  color: #f0f0f0">
     <div class="main-container">
-        <div class="card movie-card">
-            <h2 class="card-title">🎬 Movie Search</h2>
+        <h2 class="card-title">🎬 Movie Search</h2>
 
-            <!-- Movie Search Form -->
-            <form method="POST" action="/users/{{ user_id }}/add_movie" class="form-section">
-                <label for="title" class="form-label">Movie Title:</label>
-                <input type="text" id="title" name="Title" placeholder="Enter movie title" required class="form-input">
-                <button type="submit" class="button button-success">🔍 Search</button>
-            </form>
+        <form method="POST" action="/users/{{ user_id }}/add_movie" class="form-section">
+            <label for="title" class="form-label">Movie Title:</label>
+            <input type="text" id="title" name="Title" placeholder="Enter movie title" required class="form-input">
+            <button type="submit" class="button button-success">🔍 Search</button>
+        </form>
 
-            {% if error %}
-                <div class="message-box error"> {{ error }}</div>
-            {% endif %}
+        {% endif %}
 
-            {% if movie %}
-                <!-- Movie Display -->
-                <div class="movie-info">
-                    <h3 class="movie-title">{{ movie.Title }} ({{ movie.Year }})</h3>
-                    <p><strong>Director:</strong> {{ movie.Director }}</p>
-                    <p><strong>IMDb Rating:</strong> ⭐{{ movie.imdbRating }}</p>
-                    <img src="{{ movie.Poster }}" alt="Poster of {{ movie.Title }}" class="movie-poster">
-                </div>
 
-                <!-- Movie Add Form -->
-                <form method="POST" action="/users/{{ user_id }}/add_movie" class="form-section">
-                    <input type="hidden" name="movie_json" value="{{ movie }}">
-                    <button type="submit" class="button button-success">➕ Add Movie</button>
-                </form>
-            {% endif %}
+        {% if movie %}
+        <div class="movie-info">
+            <h3 class="movie-title">{{ movie.Title }} ({{ movie.Year }})</h3>
+            <p><strong>Director:</strong> {{ movie.Director }}</p>
+            <p><strong>IMDb Rating:</strong> ⭐{{ movie.imdbRating }}</p>
+            <img src="{{ movie.Poster }}" alt="Poster of {{ movie.Title }}" class="movie-poster">
+        </div>
 
-            <!-- Back Button -->
-            <div class="button-wrapper">
-                <a href="/users/{{user_id}}" class="button button-danger">🔙 Back</a>
-            </div>
+        <form method="POST" action="/users/{{ user_id }}/add_movie" class="form-section">
+            <input type="hidden" name="movie_json" value="{{ movie }}">
+            <button type="submit" class="button button-success">➕ Add Movie</button>
+        </form>
+        {% endif %}
+
+        <div class="button-wrapper">
+            <a href="/users/{{ user_id }}" class="button button-primary">🔙 Back</a>
         </div>
     </div>
-</body>
-</html>
+    {% endblock %}

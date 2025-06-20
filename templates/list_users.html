@@ -3,34 +3,34 @@
 {% set active_page = 'users' %}
 
 {% block content %}
-  <h1>Registered Users</h1>
+<h1>Registered Users</h1>
 
-  <div class="actions" style="margin-bottom: 1em;">
+<div class="actions" style="margin-bottom: 1em;">
     <a href="{{ url_for('add_user') }}" class="button button-add">➕ Add User</a>
-  </div>
+</div>
 
-  {% if users %}
-    <div class="user-grid">
-      {% for user in users %}
-        <div class="user-card-container" id="user-{{ user.id }}">
-          <div>
+{% if users %}
+<div class="user-grid">
+    {% for user in users %}
+    <div class="user-card-container" id="user-{{ user.id }}">
+        <div>
             <h3>{{ user.name | e }}</h3>
             <p><strong>ID:</strong> {{ user.id }}</p>
-          </div>
+        </div>
 
-          <div class="user-action-buttons">
+        <div class="user-action-buttons">
             <a href="/users/{{ user.id }}" class="button button-success">🎬 View Movies</a>
             <form action="/users/delete/{{ user.id }}" method="post" style="margin: 0;">
-              <button type="submit" class="button button-danger"
-                      onclick="return confirm('Are you sure you want to delete this user?');">
-                🗑️ Delete User
-              </button>
+                <button type="submit" class="button button-danger"
+                        onclick="return confirm('Are you sure you want to delete this user?');">
+                    🗑️ Delete User
+                </button>
             </form>
-          </div>
         </div>
-      {% endfor %}
     </div>
-  {% else %}
-    <p>No users found.</p>
-  {% endif %}
+    {% endfor %}
+</div>
+{% else %}
+<p>No users found.</p>
+{% endif %}
 {% endblock %}

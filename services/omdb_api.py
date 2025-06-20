@@ -2,7 +2,7 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from requests.exceptions import HTTPError, ConnectionError, Timeout
+from requests.exceptions import HTTPError, ConnectionError, Timeout, MissingSchema
 
 load_dotenv()
 OMDB_API_KEY = os.getenv("OMDB_API_KEY")
@@ -44,5 +44,5 @@ def check_poster_availability(url):
         response = requests.get(url)
         response.raise_for_status()
         return url
-    except(ConnectionError, Timeout, HTTPError):
+    except(ConnectionError, Timeout, HTTPError, MissingSchema):
         return "/static/fallback_poster.jpeg"
